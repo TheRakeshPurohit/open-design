@@ -3729,15 +3729,17 @@ function HtmlViewer({
         { requestId },
       );
     };
+    const toastFormats = new Set(['pdf', 'pptx', 'zip', 'html', 'markdown']);
     try {
       const out = fn();
       if (out && typeof (out as Promise<unknown>).then === 'function') {
         (out as Promise<unknown>).then(
-          () => finish('success'),
+          () => { finish('success'); if (toastFormats.has(format)) setExportToast(t('fileViewer.exportStarted')); },
           (err) => finish('failed', err instanceof Error ? err.name : 'UNKNOWN'),
         );
       } else {
         finish('success');
+        if (toastFormats.has(format)) setExportToast(t('fileViewer.exportStarted'));
       }
     } catch (err) {
       finish('failed', err instanceof Error ? err.name : 'UNKNOWN');
@@ -4064,6 +4066,7 @@ function HtmlViewer({
   const [commentSavedToast, setCommentSavedToast] = useState<string | null>(null);
   const [templateSavedToast, setTemplateSavedToast] = useState<string | null>(null);
   const [deploySavedToast, setDeploySavedToast] = useState<{ message: string; details: string } | null>(null);
+  const [exportToast, setExportToast] = useState<string | null>(null);
   const [selectedSideCommentIds, setSelectedSideCommentIds] = useState<Set<string>>(() => new Set());
   const [commentSidePanelCollapsed, setCommentSidePanelCollapsed] = useState(false);
   const [strokePoints, setStrokePoints] = useState<StrokePoint[]>([]);
@@ -6843,6 +6846,15 @@ function HtmlViewer({
                   setQueuedBoardNotes([]);
                 }}
               />
+            ) : null}
+            {exportToast ? (
+              <div className="comment-toast-anchor">
+                <Toast
+                  message={exportToast}
+                  ttlMs={2200}
+                  onDismiss={() => setExportToast(null)}
+                />
+              </div>
             ) : null}
             {commentSavedToast ? (
               <div className="comment-toast-anchor">
