@@ -8670,6 +8670,7 @@ export function ProjectView({
               hasActiveDesignSystem={!!projectDesignSystemId}
               activeDesignSystem={chatDesignSystemSummary}
               projectFileNames={projectFileNames}
+              projectResolvedDir={projectDetail.resolvedDir}
               skills={skills}
               onEnsureProject={handleEnsureProject}
               previewComments={previewComments}
